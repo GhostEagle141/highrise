@@ -1,0 +1,209 @@
+/* =========================================
+   Highrise – Tenant Dues
+   ========================================= */
+
+/* ---- Summary pills ---- */
+.dues-summary {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.summary-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 24px;
+  border-radius: 10px;
+  min-width: 90px;
+  flex: 1;
+}
+
+.summary-pill--paid    { background: rgba(27, 107, 53, 0.1);  }
+.summary-pill--unpaid  { background: rgba(180, 50,  50, 0.08); }
+.summary-pill--total   { background: rgba(27, 63,  114, 0.08); }
+
+.summary-pill__count {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.summary-pill--paid   .summary-pill__count { color: #1B6B35; }
+.summary-pill--unpaid .summary-pill__count { color: #B43232; }
+.summary-pill--total  .summary-pill__count { color: #1B3F72; }
+
+.summary-pill__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-top: 5px;
+  color: var(--text-muted);
+}
+
+/* ---- Toolbar ---- */
+.table-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: #fff;
+  border: 1px solid rgba(14,28,47,0.1);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+}
+
+.search-input:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(27,63,114,0.08);
+}
+
+.filter-select {
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: #fff;
+  border: 1px solid rgba(14,28,47,0.1);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238FA0B4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.filter-select:focus { border-color: var(--blue-mid); }
+
+/* ---- Table ---- */
+.table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(14,28,47,0.06);
+  box-shadow: 0 1px 6px rgba(14,28,47,0.05);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dues-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 560px;
+}
+
+.dues-table thead tr {
+  border-bottom: 1px solid rgba(14,28,47,0.08);
+}
+
+.dues-table th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dues-table td {
+  padding: 14px 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(14,28,47,0.05);
+  vertical-align: middle;
+}
+
+.dues-table tbody tr:last-child td { border-bottom: none; }
+
+.dues-table tbody tr:hover { background: #F8FAFD; }
+
+/* Unpaid row highlight */
+.dues-table tbody tr.row-unpaid {
+  background: rgba(180, 50, 50, 0.04);
+}
+
+.dues-table tbody tr.row-unpaid:hover {
+  background: rgba(180, 50, 50, 0.08);
+}
+
+/* ---- Status badge ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge--paid {
+  background: rgba(27, 107, 53, 0.1);
+  color: #1B6B35;
+}
+
+.badge--unpaid {
+  background: rgba(180, 50, 50, 0.1);
+  color: #B43232;
+}
+
+.badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badge--paid   .badge__dot { background: #1B6B35; }
+.badge--unpaid .badge__dot { background: #B43232; }
+
+/* Unpaid date cell */
+.no-date {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+/* No results */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 300;
+}

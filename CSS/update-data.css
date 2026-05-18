@@ -1,0 +1,195 @@
+/* =========================================
+   Highrise – Update Data Page
+   ========================================= */
+
+.upload-card {
+  margin-top: 28px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 2px 24px rgba(14,28,47,0.07), 0 1px 4px rgba(14,28,47,0.04);
+  border: 1px solid rgba(14,28,47,0.06);
+  max-width: 560px;
+}
+
+/* ---- Drop Zone ---- */
+.drop-zone {
+  border: 2px dashed rgba(27, 63, 114, 0.25);
+  border-radius: 10px;
+  padding: 40px 24px;
+  text-align: center;
+  background: #F5F7FA;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.drop-zone.dragover {
+  border-color: var(--blue-mid);
+  background: rgba(27, 63, 114, 0.05);
+}
+
+.drop-zone.has-file {
+  cursor: default;
+  padding: 24px;
+}
+
+/* Excel icon */
+.excel-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.drop-zone__heading {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.drop-zone__sub {
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.btn-browse {
+  padding: 9px 22px;
+  background: none;
+  border: 1.5px solid var(--blue-border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--blue-mid);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-browse:hover {
+  background: var(--blue-subtle);
+  border-color: var(--blue-mid);
+}
+
+/* ---- File selected state ---- */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+
+.file-info__icon { flex-shrink: 0; }
+
+.file-info__meta { flex: 1; min-width: 0; }
+
+.file-info__name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-info__size {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.18s, background 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-remove:hover {
+  color: #c94040;
+  background: rgba(201,64,64,0.08);
+}
+
+/* ---- Actions ---- */
+.upload-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.btn-upload {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--blue);
+  border: none;
+  border-radius: 9px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.12s, opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-upload:hover:not(:disabled) { background: var(--blue-mid); }
+.btn-upload:active:not(:disabled) { transform: scale(0.98); }
+
+.btn-upload:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+/* ---- Success toast ---- */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1B6B35;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 12px 24px;
+  border-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  z-index: 999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 480px) {
+  .upload-card { padding: 20px 16px; }
+  .drop-zone   { padding: 32px 16px; }
+  .btn-upload  { width: 100%; justify-content: center; }
+}

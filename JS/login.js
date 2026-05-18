@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!password) { showError(txtPassword); valid = false; }
     if (!valid) return;
 
-    // TODO: hook up to WS/WS_User_Functions.php (Function_ID=1)
+    window.location.href = 'index.php';
   });
 
   // Clear error as user types
@@ -49,13 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     input.addEventListener('input', function () { clearError(input); });
   });
 
-  // --- Helpers ---
-  function showError(input) {
-    input.classList.add('error');
-  }
-
-  function clearError(input) {
-    input.classList.remove('error');
-  }
+  function showError(input)  { input.classList.add('error'); }
+  function clearError(input) { input.classList.remove('error'); }
 
 });
