@@ -4,79 +4,135 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  const dropZone  = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const btnBrowse = document.getElementById('btnBrowse');
-  const btnRemove = document.getElementById('btnRemove');
-  const btnUpload = document.getElementById('btnUpload');
-  const stateIdle = document.getElementById('stateIdle');
-  const stateFile = document.getElementById('stateFile');
-  const fileName  = document.getElementById('fileName');
-  const fileSize  = document.getElementById('fileSize');
-
   const ALLOWED = ['xlsx', 'xls', 'csv'];
 
-  // --- Browse button ---
-  btnBrowse.addEventListener('click', function (e) {
-    e.stopPropagation();
-    fileInput.click();
+  initUploadZone({
+    dropZone:   document.getElementById('dropZone'),
+    fileInput:  document.getElementById('fileInput'),
+    btnBrowse:  document.getElementById('btnBrowse'),
+    btnRemove:  document.getElementById('btnRemove'),
+    btnUpload:  document.getElementById('btnUpload'),
+    stateIdle:  document.getElementById('stateIdle'),
+    stateFile:  document.getElementById('stateFile'),
+    fileName:   document.getElementById('fileName'),
+    fileSize:   document.getElementById('fileSize'),
+    uploadUrl:  'WS/WS_Upload_Financial.php',
+    successMsg: 'Financial data uploaded successfully',
+    _file:      null   // stores the actual File object
   });
 
-  fileInput.addEventListener('change', function () {
-    if (fileInput.files.length) handleFile(fileInput.files[0]);
+  initUploadZone({
+    dropZone:   document.getElementById('dropZoneTenant'),
+    fileInput:  document.getElementById('fileInputTenant'),
+    btnBrowse:  document.getElementById('btnBrowseTenant'),
+    btnRemove:  document.getElementById('btnRemoveTenant'),
+    btnUpload:  document.getElementById('btnUploadTenant'),
+    stateIdle:  document.getElementById('stateIdleTenant'),
+    stateFile:  document.getElementById('stateFileTenant'),
+    fileName:   document.getElementById('fileNameTenant'),
+    fileSize:   document.getElementById('fileSizeTenant'),
+    uploadUrl:  'WS/WS_Upload_Tenant.php',
+    successMsg: 'Tenant data uploaded successfully',
+    _file:      null
   });
 
-  // --- Drag & drop ---
-  dropZone.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    dropZone.classList.add('dragover');
-  });
+  function initUploadZone(z) {
 
-  ['dragleave', 'dragend'].forEach(function (evt) {
-    dropZone.addEventListener(evt, function () {
-      dropZone.classList.remove('dragover');
+    z.btnBrowse.addEventListener('click', function (e) {
+      e.stopPropagation();
+      z.fileInput.click();
     });
-  });
 
-  dropZone.addEventListener('drop', function (e) {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-  });
+    // File picked via browse
+    z.fileInput.addEventListener('change', function () {
+      if (z.fileInput.files.length) handleFile(z.fileInput.files[0], z);
+    });
 
-  // --- Remove file ---
-  btnRemove.addEventListener('click', function () {
-    clearFile();
-  });
+    z.dropZone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      z.dropZone.classList.add('dragover');
+    });
 
-  // --- Upload ---
-  btnUpload.addEventListener('click', function () {
-    // TODO: hook up to backend upload handler
-    showToast('File uploaded successfully');
-    clearFile();
-  });
+    ['dragleave', 'dragend'].forEach(function (evt) {
+      z.dropZone.addEventListener(evt, function () {
+        z.dropZone.classList.remove('dragover');
+      });
+    });
 
-  // --- Helpers ---
-  function handleFile(file) {
+    // File dropped
+    z.dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      z.dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0], z);
+    });
+
+    z.btnRemove.addEventListener('click', function () { clearFile(z); });
+
+    z.btnUpload.addEventListener('click', function () {
+      if (!z._file) {
+        showToast('No file selected.', true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', z._file);   // use stored File object
+
+      z.btnUpload.disabled    = true;
+      z.btnUpload.textContent = 'Uploading...';
+
+      fetch(z.uploadUrl, { method: 'POST', body: formData })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            showToast(data.message || z.successMsg, false);
+            clearFile(z);
+          } else {
+            showToast(data.error || 'Upload failed.', true);
+            z.btnUpload.disabled = false;
+            restoreBtn(z);
+          }
+        })
+        .catch(function () {
+          showToast('Network error. Please try again.', true);
+          z.btnUpload.disabled = false;
+          restoreBtn(z);
+        });
+    });
+  }
+
+  function handleFile(file, z) {
     const ext = file.name.split('.').pop().toLowerCase();
     if (!ALLOWED.includes(ext)) {
       showToast('Please upload an .xlsx, .xls, or .csv file', true);
       return;
     }
-    fileName.textContent = file.name;
-    fileSize.textContent = formatSize(file.size);
-    stateIdle.style.display = 'none';
-    stateFile.style.display = 'block';
-    dropZone.classList.add('has-file');
-    btnUpload.disabled = false;
+    z._file = file;   // store the File object here
+    z.fileName.textContent = file.name;
+    z.fileSize.textContent = formatSize(file.size);
+    z.stateIdle.style.display = 'none';
+    z.stateFile.style.display = 'block';
+    z.dropZone.classList.add('has-file');
+    z.btnUpload.disabled = false;
   }
 
-  function clearFile() {
-    fileInput.value = '';
-    stateIdle.style.display = 'block';
-    stateFile.style.display = 'none';
-    dropZone.classList.remove('has-file');
-    btnUpload.disabled = true;
+  function clearFile(z) {
+    z._file = null;
+    z.fileInput.value = '';
+    z.stateIdle.style.display = 'block';
+    z.stateFile.style.display = 'none';
+    z.dropZone.classList.remove('has-file');
+    z.btnUpload.disabled = true;
+    restoreBtn(z);
+  }
+
+  function restoreBtn(z) {
+    z.btnUpload.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 16 12 12 8 16"/>
+        <line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+      </svg>
+      Upload & Save`;
   }
 
   function formatSize(bytes) {

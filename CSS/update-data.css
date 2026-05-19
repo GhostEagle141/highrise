@@ -193,3 +193,21 @@
   .drop-zone   { padding: 32px 16px; }
   .btn-upload  { width: 100%; justify-content: center; }
 }
+
+/* ---- Section label ---- */
+.upload-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.upload-section-label svg {
+  color: var(--blue-mid);
+  flex-shrink: 0;
+}
