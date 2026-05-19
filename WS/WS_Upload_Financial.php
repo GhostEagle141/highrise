@@ -117,6 +117,9 @@ if (!$stmtTenant || !$stmtPayment) {
     exit;
 }
 
+// ---- Begin transaction ----
+$conn->begin_transaction();
+
 // ---- Process rows ----
 $tenantsUpserted  = 0;
 $paymentsUpserted = 0;
@@ -191,16 +194,31 @@ for ($i = $dataStart; $i < count($rows); $i++) {
 
 $stmtTenant->close();
 $stmtPayment->close();
+
+// ---- Commit or rollback ----
+if (!empty($errors) && $paymentsUpserted === 0) {
+    // Nothing succeeded — roll everything back
+    $conn->rollback();
+    $conn->close();
+    echo json_encode([
+        'success' => false,
+        'error'   => 'All rows failed. No data was saved.',
+        'errors'  => $errors
+    ]);
+    exit;
+}
+
+$conn->commit();
 $conn->close();
 
 // ---- Response ----
 echo json_encode([
-    'success'          => true,
-    'tenants_upserted' => $tenantsUpserted,
-    'payments_upserted'=> $paymentsUpserted,
-    'skipped'          => $skipped,
-    'errors'           => $errors,
-    'message'          => "$paymentsUpserted payment record(s) saved, $tenantsUpserted tenant(s) synced."
+    'success'           => true,
+    'tenants_upserted'  => $tenantsUpserted,
+    'payments_upserted' => $paymentsUpserted,
+    'skipped'           => $skipped,
+    'errors'            => $errors,
+    'message'           => "$paymentsUpserted payment record(s) saved, $tenantsUpserted tenant(s) synced."
 ]);
 exit;
 ?>

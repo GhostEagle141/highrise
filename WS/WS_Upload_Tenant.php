@@ -79,6 +79,9 @@ if ($idxAuxiliary === null || $idxName === null || $idxAccountNo === null) {
     exit;
 }
 
+// ---- Begin transaction ----
+$conn->begin_transaction();
+
 // ---- Insert rows into tenants_list ----
 $stmt = $conn->prepare("
     INSERT INTO tenants_list (id, name, related_account_id)
@@ -120,6 +123,20 @@ for ($i = $dataStart; $i < count($rows); $i++) {
 }
 
 $stmt->close();
+
+// ---- Commit or rollback ----
+if (!empty($errors) && $inserted === 0) {
+    $conn->rollback();
+    $conn->close();
+    echo json_encode([
+        'success' => false,
+        'error'   => 'All rows failed. No data was saved.',
+        'errors'  => $errors
+    ]);
+    exit;
+}
+
+$conn->commit();
 $conn->close();
 
 // ---- Response ----
