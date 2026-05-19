@@ -81,11 +81,11 @@ if ($idxAuxiliary === null || $idxName === null || $idxAccountNo === null) {
 
 // ---- Insert rows into tenants_list ----
 $stmt = $conn->prepare("
-    INSERT INTO tenants_list (id, name, building_id)
+    INSERT INTO tenants_list (id, name, related_account_id)
     VALUES (?, ?, ?)
     ON DUPLICATE KEY UPDATE
         name        = VALUES(name),
-        building_id = VALUES(building_id)
+        related_account_id = VALUES(related_account_id)
 ");
 
 if (!$stmt) {
@@ -102,7 +102,7 @@ for ($i = $dataStart; $i < count($rows); $i++) {
 
     $id          = trim($row[$idxAuxiliary] ?? '');
     $name        = trim($row[$idxName]      ?? '');
-    $building_id = trim($row[$idxAccountNo] ?? '');
+    $related_account_id = trim($row[$idxAccountNo] ?? '');
 
     // Skip blank rows
     if ($id === '' || $name === '') {
@@ -110,7 +110,7 @@ for ($i = $dataStart; $i < count($rows); $i++) {
         continue;
     }
 
-    $stmt->bind_param('sss', $id, $name, $building_id);
+    $stmt->bind_param('sss', $id, $name, $related_account_id);
 
     if ($stmt->execute()) {
         $inserted++;
