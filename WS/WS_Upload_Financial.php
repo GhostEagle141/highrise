@@ -102,17 +102,20 @@ $stmtTenant = $conn->prepare("
         related_account_id = VALUES(related_account_id)
 ");
 
-// 2. Upsert into tenants_payments_list
+// 2. Delete existing payment record for same tenant + date
+$stmtDeletePayment = $conn->prepare("
+    DELETE FROM tenants_payments_list
+    WHERE tenant_id = ? AND due_by_date = ?
+");
+
+// 3. Insert fresh payment record
 $stmtPayment = $conn->prepare("
     INSERT INTO tenants_payments_list
         (tenant_id, currency_id, dues_total, advances_total, due_by_date)
     VALUES (?, ?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE
-        dues_total     = VALUES(dues_total),
-        advances_total = VALUES(advances_total)
 ");
 
-if (!$stmtTenant || !$stmtPayment) {
+if (!$stmtTenant || !$stmtDeletePayment || !$stmtPayment) {
     echo json_encode(['success' => false, 'error' => 'Statement prepare failed: ' . $conn->error]);
     exit;
 }
@@ -183,16 +186,23 @@ for ($i = $dataStart; $i < count($rows); $i++) {
         continue;
     }
 
-    // ---- Step 5: Upsert payment record ----
+    // ---- Step 5: Delete existing record then insert fresh ----
+    $stmtDeletePayment->bind_param('ss', $auxiliary, $dueDate);
+    if (!$stmtDeletePayment->execute()) {
+        $errors[] = "Row $i delete failed: " . $stmtDeletePayment->error;
+        continue;
+    }
+
     $stmtPayment->bind_param('ssdds', $auxiliary, $currencyId, $dues, $advances, $dueDate);
     if ($stmtPayment->execute()) {
         $paymentsUpserted++;
     } else {
-        $errors[] = "Row $i payment upsert: " . $stmtPayment->error;
+        $errors[] = "Row $i payment insert: " . $stmtPayment->error;
     }
 }
 
 $stmtTenant->close();
+$stmtDeletePayment->close();
 $stmtPayment->close();
 
 // ---- Commit or rollback ----
