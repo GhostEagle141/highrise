@@ -134,6 +134,36 @@
         </div>
       </div>
 
+      <!-- Date filter -->
+      <div class="date-toolbar">
+        <select id="filterMonth" class="filter-select">
+          <option value="">All Months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+        <select id="filterYear" class="filter-select">
+          <option value="">All Years</option>
+          <!-- populated by JS -->
+        </select>
+        <button class="btn-apply" id="btnApply">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Apply
+        </button>
+        <button class="btn-reset" id="btnReset">Reset</button>
+      </div>
+
       <!-- Search + filter -->
       <div class="table-toolbar">
         <div class="search-wrap">
@@ -144,8 +174,8 @@
         </div>
         <select id="filterStatus" class="filter-select">
           <option value="all">All</option>
-          <option value="paid">Paid</option>
-          <option value="unpaid">Unpaid</option>
+          <option value="paid">Cleared</option>
+          <option value="unpaid">Overdue</option>
         </select>
       </div>
 
@@ -156,9 +186,9 @@
             <tr>
               <th>#</th>
               <th>Tenant Name</th>
-              <th>Phone</th>
               <th>Due Amount</th>
-              <th>Payment Date</th>
+              <th>Advance Amount</th>
+              <th>Due Date</th>
               <th>Status</th>
             </tr>
           </thead>
