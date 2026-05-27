@@ -37,3 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 });
+
+// Prevent browser from opening files dragged anywhere on the page
+window.addEventListener('dragover', function (e) { e.preventDefault(); });
+window.addEventListener('drop',     function (e) { e.preventDefault(); });
