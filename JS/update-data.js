@@ -4,7 +4,28 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  const ALLOWED = ['xlsx', 'xls', 'csv'];
+  const ALLOWED        = ['xlsx', 'xls', 'csv'];
+  const selectProject  = document.getElementById('selectProject');
+
+  // ---- Load projects dropdown ----
+  fetch('WS/WS_Fetch_Projects.php')
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      selectProject.innerHTML = '<option value="">-- Select Project --</option>';
+      if (res.success && res.data.length) {
+        res.data.forEach(function (p) {
+          const opt = document.createElement('option');
+          opt.value       = p.ID;
+          opt.textContent = p.Name;
+          selectProject.appendChild(opt);
+        });
+      } else {
+        selectProject.innerHTML = '<option value="">No projects found</option>';
+      }
+    })
+    .catch(function () {
+      selectProject.innerHTML = '<option value="">Failed to load projects</option>';
+    });
 
   initUploadZone({
     dropZone:   document.getElementById('dropZone'),
@@ -79,6 +100,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
       z.btnUpload.disabled    = true;
       z.btnUpload.textContent = 'Uploading...';
+
+      // Attach project ID for budget uploads
+      if (z.uploadUrl.includes('Budget')) {
+        const projectId = selectProject.value;
+        if (!projectId) {
+          showToast('Please select a project before uploading.', true);
+          z.btnUpload.disabled = false;
+          restoreBtn(z);
+          return;
+        }
+        formData.append('project_id', projectId);
+      }
 
       fetch(z.uploadUrl, { method: 'POST', body: formData })
         .then(function (r) { return r.json(); })

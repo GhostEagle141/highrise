@@ -197,8 +197,50 @@
         </div>
 
       </div>
-    </div>
 
+      <!-- Budget pie chart -->
+      <div class="charts-grid" style="margin-top: 16px;">
+        <div class="chart-card" style="grid-column: 1 / -1;">
+          <div class="chart-card-header">
+            <div>
+              <h2 class="chart-card__title">Budget by Cost Group</h2>
+              <p class="chart-card__sub">Total budget allocation per group</p>
+            </div>
+            <select id="budgetProjectSelect" class="budget-project-select">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div class="budget-chart-wrap">
+            <div class="budget-pie-wrap">
+              <canvas id="chartBudget2"></canvas>
+            </div>
+            <div class="budget-legend" id="budgetLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost group breakdown pie chart -->
+      <div class="charts-grid" style="margin-top: 16px;">
+        <div class="chart-card" style="grid-column: 1 / -1;">
+          <div class="chart-card-header">
+            <div>
+              <h2 class="chart-card__title">Cost Breakdown</h2>
+              <p class="chart-card__sub">Budget amounts per cost within selected group</p>
+            </div>
+            <select id="costGroupSelect" class="budget-project-select">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div class="budget-chart-wrap">
+            <div class="budget-pie-wrap">
+              <canvas id="chartCostGroup"></canvas>
+            </div>
+            <div class="budget-legend" id="costGroupLegend"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>

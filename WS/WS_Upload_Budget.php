@@ -4,6 +4,10 @@
 // Handles merged cells in both item and cost code columns
 // =========================================
 
+// Suppress xDebug/warnings from polluting JSON output
+ini_set('display_errors', 0);
+error_reporting(0);
+
 require_once '../DAL/DAL.php';
 require_once '../vendor/autoload.php';
 
@@ -34,6 +38,14 @@ $savePath = $uploadDir . date('Y-m-d_H-i-s') . '_budget.' . $ext;
 
 if (!move_uploaded_file($file['tmp_name'], $savePath)) {
     echo json_encode(['success' => false, 'error' => 'Failed to save file.']);
+    exit;
+}
+
+// ---- Validate project ID ----
+$projectId = isset($_POST['project_id']) && $_POST['project_id'] !== '' ? intval($_POST['project_id']) : null;
+
+if (!$projectId) {
+    echo json_encode(['success' => false, 'error' => 'No project selected.']);
     exit;
 }
 
@@ -79,14 +91,24 @@ if (!$dataStart) {
     exit;
 }
 
-// ---- Find cost code column ----
+// ---- Find cost code and budget columns ----
 $costCodeCol = null;
+$budgetCol   = null;
+$budgetYear  = null;
+
 for ($col = 1; $col <= $highestColIndex; $col++) {
     $colLetter = Coordinate::stringFromColumnIndex($col);
     $val       = strtolower(trim($sheet->getCell($colLetter . $headerRow)->getValue() ?? ''));
+    if ($val === '') continue;
+
     if (strpos($val, 'cost') !== false || strpos($val, 'code') !== false) {
         $costCodeCol = $colLetter;
-        break;
+    }
+    if (strpos($val, 'proposed') !== false || strpos($val, 'budget') !== false) {
+        $budgetCol = $colLetter;
+        if (preg_match('/(\d{4})/', $val, $yearMatch)) {
+            $budgetYear = intval($yearMatch[1]);
+        }
     }
 }
 
@@ -161,8 +183,14 @@ $conn->begin_transaction();
 $stmtGroup    = $conn->prepare("INSERT IGNORE INTO cost_groups_list (name) VALUES (?)");
 $stmtCost     = $conn->prepare("INSERT IGNORE INTO costs_list (name, cost_group_id) VALUES (?, ?)");
 $stmtCostCode = $conn->prepare("INSERT IGNORE INTO costs_related_cost_codes (cost_id, related_cost_code) VALUES (?, ?)");
+$stmtBudget   = $conn->prepare("
+    INSERT INTO budget_list (cost_id, project_id, budget_amount, currency_id, year)
+    VALUES (?, ?, ?, 1, ?)
+    ON DUPLICATE KEY UPDATE
+        budget_amount = IF(budget_amount = VALUES(budget_amount), budget_amount, VALUES(budget_amount))
+");
 
-if (!$stmtGroup || !$stmtCost || !$stmtCostCode) {
+if (!$stmtGroup || !$stmtCost || !$stmtCostCode || !$stmtBudget) {
     $conn->rollback();
     echo json_encode(['success' => false, 'error' => 'Prepare failed: ' . $conn->error]);
     exit;
@@ -171,6 +199,7 @@ if (!$stmtGroup || !$stmtCost || !$stmtCostCode) {
 $groupsInserted    = 0;
 $costsInserted     = 0;
 $costCodesInserted = 0;
+$budgetsInserted   = 0;
 $skipped           = 0;
 $errors            = [];
 
@@ -260,11 +289,26 @@ for ($row = $dataStart; $row <= $highestRow; $row++) {
             $errors[] = "Cost code '$costCodeVal': " . $stmtCostCode->error;
         }
     }
+
+    // Insert budget — only once per cost (not per cost code)
+    $budgetKey = 'budget_' . $costKey;
+    if ($costId !== null && $budgetCol !== null && $budgetYear !== null && !isset($seenCosts[$budgetKey])) {
+        $seenCosts[$budgetKey] = true;
+        $rawBudget  = trim($sheet->getCell($budgetCol . $row)->getCalculatedValue() ?? '');
+        $budgetAmt  = is_numeric(str_replace(',', '', $rawBudget)) ? floatval(str_replace(',', '', $rawBudget)) : 0.00;
+        $stmtBudget->bind_param('iidi', $costId, $projectId, $budgetAmt, $budgetYear);
+        if ($stmtBudget->execute()) {
+            $budgetsInserted++;
+        } else {
+            $errors[] = "Budget for cost '$itemVal': " . $stmtBudget->error;
+        }
+    }
 }
 
 $stmtGroup->close();
 $stmtCost->close();
 $stmtCostCode->close();
+$stmtBudget->close();
 
 // ---- Commit or rollback ----
 if ($groupsInserted === 0 && $costsInserted === 0 && !empty($errors)) {
@@ -278,13 +322,14 @@ $conn->commit();
 $conn->close();
 
 echo json_encode([
-    'success'            => true,
-    'groups_inserted'    => $groupsInserted,
-    'costs_inserted'     => $costsInserted,
-    'cost_codes_inserted'=> $costCodesInserted,
-    'skipped'            => $skipped,
-    'errors'             => $errors,
-    'message'            => "$groupsInserted group(s), $costsInserted cost(s) and $costCodesInserted cost code(s) saved successfully."
+    'success'             => true,
+    'groups_inserted'     => $groupsInserted,
+    'costs_inserted'      => $costsInserted,
+    'cost_codes_inserted' => $costCodesInserted,
+    'budgets_inserted'    => $budgetsInserted,
+    'skipped'             => $skipped,
+    'errors'              => $errors,
+    'message'             => "$groupsInserted group(s), $costsInserted cost(s), $costCodesInserted cost code(s) and $budgetsInserted budget(s) saved successfully."
 ]);
 exit;
 ?>

@@ -142,3 +142,186 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ---- Budget chart card ---- */
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.budget-project-select {
+  padding: 8px 32px 8px 12px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  background: #F5F7FA;
+  border: 1px solid rgba(27,63,114,0.18);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238FA0B4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  flex-shrink: 0;
+}
+
+.budget-project-select:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(27,63,114,0.08);
+}
+
+.budget-chart-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.budget-pie-wrap {
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.budget-pie-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.budget-legend {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.budget-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.budget-legend-item strong {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-left: auto;
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.budget-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.budget-legend-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .budget-pie-wrap { width: 180px; height: 180px; }
+  .budget-chart-wrap { justify-content: center; }
+}
+
+/* ---- Budget chart responsive ---- */
+@media (max-width: 430px) {
+  .budget-chart-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .budget-pie-wrap {
+    width: 190px;
+    height: 190px;
+  }
+
+  .budget-legend {
+    width: 100%;
+    min-width: unset;
+    gap: 6px;
+  }
+
+  /* Mobile legend: dot + name on top, amount + % below */
+  .budget-legend-item {
+    flex-direction: column;
+    align-items: flex-start;
+    background: #F5F7FA;
+    border-radius: 8px;
+    padding: 8px 12px;
+    gap: 3px;
+  }
+
+  .budget-legend-item .budget-legend-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .budget-legend-item .budget-legend-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .budget-legend-item strong {
+    margin-left: 18px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    padding-left: 0;
+  }
+
+  .chart-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .budget-project-select {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Desktop: keep legend-top inline */
+.budget-legend-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Override for desktop — keep original single-row layout */
+@media (min-width: 431px) {
+  .budget-legend-item {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .budget-legend-item strong {
+    margin-left: auto;
+  }
+}

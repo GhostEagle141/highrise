@@ -118,6 +118,17 @@
       <h1 class="page-title">Update Data</h1>
       <p class="page-sub">Upload Excel sheets to sync the latest data</p>
 
+      <!-- Project selector -->
+      <div class="project-selector-wrap">
+        <label class="form-label" for="selectProject">Project</label>
+        <div class="project-selector-row">
+          <select id="selectProject" class="project-select">
+            <option value="">Loading projects...</option>
+          </select>
+          <span class="project-selector-hint">Applies to all uploads on this page</span>
+        </div>
+      </div>
+
       <!-- Financial Data -->
       <div class="upload-section-label">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -242,7 +253,7 @@
             </svg>
             Upload & Save
           </button>
-          <p class="upload-hint">Budget data will be updated immediately after upload</p>
+          <p class="upload-hint">Budget data will be saved for the selected project</p>
         </div>
       </div>
 
