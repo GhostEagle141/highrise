@@ -1,0 +1,57 @@
+/* =========================================
+   Highrise – Financial Details
+   ========================================= */
+
+/* ---- Tabular number font ---- */
+.dues-table td.amount-cell,
+#summaryCount,
+#summaryTotal {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.dues-table td.amount-cell {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.dues-table th.amount-header { text-align: right; }
+
+/* ---- Sortable headers ---- */
+.dues-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.dues-table th.sortable:hover { color: var(--blue-mid); }
+
+.sort-icon {
+  display: inline-block;
+  margin-left: 5px;
+  opacity: 0.3;
+  font-size: 0.65rem;
+  vertical-align: middle;
+  transition: opacity 0.15s;
+}
+
+.dues-table th.sort-asc  .sort-icon,
+.dues-table th.sort-desc .sort-icon {
+  opacity: 1;
+  color: var(--blue-mid);
+}
+
+/* ---- Currency badge ---- */
+.currency-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  background: rgba(27,63,114,0.08);
+  color: var(--blue-mid);
+}

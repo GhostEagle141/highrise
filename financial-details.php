@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Highrise – Tenant Dues</title>
+  <title>Highrise – Financial Details</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="CSS/index.css" />
   <link rel="stylesheet" href="CSS/tenant_dues.css" />
+  <link rel="stylesheet" href="CSS/financial_details.css" />
 </head>
 <body>
 
@@ -44,12 +45,10 @@
         Main Dashboard
       </a>
 
-      <a href="tenant-dues.php" class="nav__item active">
+      <a href="tenant-dues.php" class="nav__item">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
-          <line x1="23" y1="11" x2="23" y2="17"/>
-          <line x1="20" y1="14" x2="26" y2="14"/>
         </svg>
         Tenant Dues
       </a>
@@ -58,13 +57,11 @@
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <rect x="2" y="7" width="20" height="14" rx="2"/>
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-          <line x1="12" y1="12" x2="12" y2="16"/>
-          <line x1="10" y1="14" x2="14" y2="14"/>
         </svg>
         Supplier Dues
       </a>
 
-      <a href="financial-details.php" class="nav__item">
+      <a href="financial-details.php" class="nav__item active">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <line x1="12" y1="1" x2="12" y2="23"/>
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
@@ -122,32 +119,19 @@
       <button class="hamburger" id="btnHamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
-      <span class="topbar__title">Tenant Dues</span>
+      <span class="topbar__title">Financial Details</span>
       <div class="topbar__spacer"></div>
     </header>
 
     <div class="content">
-      <h1 class="page-title">Tenant Dues</h1>
-      <p class="page-sub">Monthly payment status for all tenants</p>
+      <h1 class="page-title">Financial Details</h1>
+      <p class="page-sub">All recorded expenses with budget group filtering</p>
 
-      <!-- Summary pills -->
-      <div class="dues-summary">
-        <div class="summary-pill summary-pill--paid">
-          <span class="summary-pill__count" id="countPaid">—</span>
-          <span class="summary-pill__label">Paid</span>
-        </div>
-        <div class="summary-pill summary-pill--unpaid">
-          <span class="summary-pill__count" id="countUnpaid">—</span>
-          <span class="summary-pill__label">Unpaid</span>
-        </div>
-        <div class="summary-pill summary-pill--total">
-          <span class="summary-pill__count" id="countTotal">—</span>
-          <span class="summary-pill__label">Total</span>
-        </div>
-      </div>
-
-      <!-- Date filter -->
-      <div class="date-toolbar">
+      <!-- Filters -->
+      <div class="date-toolbar" style="margin-top:20px;">
+        <select id="filterGroup" class="filter-select">
+          <option value="">All Cost Groups</option>
+        </select>
         <select id="filterMonth" class="filter-select">
           <option value="">All Months</option>
           <option value="1">January</option>
@@ -165,7 +149,6 @@
         </select>
         <select id="filterYear" class="filter-select">
           <option value="">All Years</option>
-          <!-- populated by JS -->
         </select>
         <button class="btn-apply" id="btnApply">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -176,45 +159,43 @@
         <button class="btn-reset" id="btnReset">Reset</button>
       </div>
 
-      <!-- Search + filter -->
-      <div class="table-toolbar">
-        <div class="search-wrap">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search tenant..." />
+      <!-- Summary -->
+      <div class="dues-summary" style="margin-top:16px;">
+        <div class="summary-pill summary-pill--total">
+          <span class="summary-pill__count" id="summaryCount">—</span>
+          <span class="summary-pill__label">Records</span>
         </div>
-        <select id="filterStatus" class="filter-select">
-          <option value="all">All</option>
-          <option value="paid">Cleared</option>
-          <option value="unpaid">Overdue</option>
-        </select>
+        <div class="summary-pill summary-pill--paid">
+          <span class="summary-pill__count" id="summaryTotal" style="font-size:1rem;">—</span>
+          <span class="summary-pill__label">Total (USD)</span>
+        </div>
       </div>
 
       <!-- Table -->
       <div class="table-wrap">
-        <table class="dues-table" id="duesTable">
+        <table class="dues-table" id="financialTable">
           <thead>
             <tr>
               <th>#</th>
-              <th>Tenant Name</th>
-              <th>Due Amount</th>
-              <th>Advance Amount</th>
-              <th>Due Date</th>
-              <th>Status</th>
+              <th class="sortable" data-col="account_no">Account No. <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="expense_name">Expense Name <span class="sort-icon">↕</span></th>
+              <th class="sortable amount-header" data-col="amount">Amount <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="currency">Currency <span class="sort-icon">↕</span></th>
+              <th class="sortable amount-header" data-col="amount_usd">Amount (USD) <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="trans_date">Date <span class="sort-icon">↕</span></th>
             </tr>
           </thead>
-          <tbody id="duesBody">
-            <!-- TODO: populated from DB via JS/PHP -->
+          <tbody id="financialBody">
+            <tr><td colspan="7" style="text-align:center;padding:30px;color:#8FA0B4;">Loading...</td></tr>
           </tbody>
         </table>
-        <p class="no-results" id="noResults" style="display:none;">No tenants match your search.</p>
+        <p class="no-results" id="noResults" style="display:none;">No records match your filters.</p>
       </div>
 
     </div>
   </div>
 
   <script src="JS/index.js"></script>
-  <script src="JS/tenant_dues.js"></script>
+  <script src="JS/financial_details.js"></script>
 </body>
 </html>

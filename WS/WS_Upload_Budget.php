@@ -50,9 +50,7 @@ if (!$projectId) {
 
 // ---- Load spreadsheet ----
 try {
-    $reader = IOFactory::createReaderForFile($savePath);
-    $reader->setReadDataOnly(true);
-    $spreadsheet = $reader->load($savePath);
+    $spreadsheet = IOFactory::load($savePath);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Failed to read file: ' . $e->getMessage()]);
     exit;
@@ -102,7 +100,7 @@ for ($col = 1; $col <= $highestColIndex; $col++) {
     $val       = strtolower(trim($sheet->getCell($colLetter . $headerRow)->getValue() ?? ''));
     if ($val === '') continue;
 
-    if (strpos($val, 'cost') !== false || strpos($val, 'code') !== false) {
+    if (strpos($val, 'comments') !== false && strpos($val, 'cost') !== false) {
         $costCodeCol = $colLetter;
     }
     if (strpos($val, 'proposed') !== false || strpos($val, 'budget') !== false) {
@@ -114,6 +112,7 @@ for ($col = 1; $col <= $highestColIndex; $col++) {
 }
 
 $itemCol = 'A';
+$debugInfo = 'costCodeCol=' . ($costCodeCol ?? 'NULL') . ' | budgetCol=' . ($budgetCol ?? 'NULL') . ' | budgetYear=' . ($budgetYear ?? 'NULL');
 
 // ---- Build merged cell map ----
 // For each row, store the actual value of the master cell it belongs to
@@ -259,23 +258,25 @@ for ($row = $dataStart; $row <= $highestRow; $row++) {
     // Deduplicate costs by name within this upload
     $costKey = strtolower($itemVal) . '|' . $currentGroupId;
     if (!isset($seenCosts[$costKey])) {
-        $seenCosts[$costKey] = null; // will store cost ID after insert
+        $seenCosts[$costKey] = null;
 
         $stmtCost->bind_param('si', $itemVal, $currentGroupId);
         if ($stmtCost->execute()) {
             if ($stmtCost->affected_rows > 0) {
                 $costsInserted++;
                 $seenCosts[$costKey] = $conn->insert_id;
-            } else {
-                // Already exists — fetch its ID
-                $escName    = $conn->real_escape_string($itemVal);
-                $existingRes = $conn->query("SELECT id FROM costs_list WHERE name = '$escName' AND cost_group_id = $currentGroupId LIMIT 1");
-                if ($existingRes && $row2 = $existingRes->fetch_assoc()) {
-                    $seenCosts[$costKey] = $row2['id'];
-                }
             }
         } else {
             $errors[] = "Cost '$itemVal': " . $stmtCost->error;
+        }
+
+        // Always fetch ID whether just inserted or already existed
+        if ($seenCosts[$costKey] === null) {
+            $escName     = $conn->real_escape_string($itemVal);
+            $existingRes = $conn->query("SELECT id FROM costs_list WHERE name = '$escName' AND cost_group_id = $currentGroupId LIMIT 1");
+            if ($existingRes && $row2 = $existingRes->fetch_assoc()) {
+                $seenCosts[$costKey] = intval($row2['id']);
+            }
         }
     }
 
@@ -322,8 +323,9 @@ foreach ($spreadsheet->getSheetNames() as $sName) {
     }
 }
 
-// ---- Step 11: Parse "GL" sheet and insert names into real_expanses_list ----
-$realExpensesInserted = 0;
+// ---- Step 11: Parse "GL" sheet ----
+$realExpensesInserted  = 0;
+$realExpensesInserted2 = 0;
 $glSheet = null;
 
 foreach ($spreadsheet->getSheetNames() as $sName) {

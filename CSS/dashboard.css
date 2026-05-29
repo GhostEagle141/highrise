@@ -325,3 +325,47 @@
     margin-left: auto;
   }
 }
+
+/* ---- Dashboard header with filters ---- */
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.dashboard-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ---- Professional tabular numbers ---- */
+.stat-card__value,
+.donut-center__value,
+.chart-legend .legend-item strong,
+.budget-legend-item strong,
+#statTotalBudget,
+#statSpent,
+#statRemaining,
+#statTenants {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.stat-card__value {
+  font-size: 1.5rem;
+}
+
+.donut-center__value {
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}

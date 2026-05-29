@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Highrise – Tenant Dues</title>
+  <title>Highrise – Expense Mapping</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="CSS/index.css" />
-  <link rel="stylesheet" href="CSS/tenant_dues.css" />
+  <link rel="stylesheet" href="CSS/expense_mapping.css" />
 </head>
 <body>
 
@@ -44,7 +44,7 @@
         Main Dashboard
       </a>
 
-      <a href="tenant-dues.php" class="nav__item active">
+      <a href="tenant-dues.php" class="nav__item">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
           <circle cx="9" cy="7" r="4"/>
@@ -81,7 +81,7 @@
         Update Data
       </a>
 
-      <a href="expense-mapping.php" class="nav__item">
+      <a href="expense-mapping.php" class="nav__item active">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <line x1="8" y1="6" x2="21" y2="6"/>
           <line x1="8" y1="12" x2="21" y2="12"/>
@@ -122,99 +122,59 @@
       <button class="hamburger" id="btnHamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
-      <span class="topbar__title">Tenant Dues</span>
+      <span class="topbar__title">Expense Mapping</span>
       <div class="topbar__spacer"></div>
+      <button class="btn-save-all" id="btnSaveAll" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Save All
+      </button>
     </header>
 
     <div class="content">
-      <h1 class="page-title">Tenant Dues</h1>
-      <p class="page-sub">Monthly payment status for all tenants</p>
+      <h1 class="page-title">Expense Mapping</h1>
+      <p class="page-sub">Match each real expense to its corresponding budget item</p>
 
-      <!-- Summary pills -->
-      <div class="dues-summary">
-        <div class="summary-pill summary-pill--paid">
-          <span class="summary-pill__count" id="countPaid">—</span>
-          <span class="summary-pill__label">Paid</span>
-        </div>
-        <div class="summary-pill summary-pill--unpaid">
-          <span class="summary-pill__count" id="countUnpaid">—</span>
-          <span class="summary-pill__label">Unpaid</span>
-        </div>
-        <div class="summary-pill summary-pill--total">
-          <span class="summary-pill__count" id="countTotal">—</span>
-          <span class="summary-pill__label">Total</span>
-        </div>
-      </div>
-
-      <!-- Date filter -->
-      <div class="date-toolbar">
-        <select id="filterMonth" class="filter-select">
-          <option value="">All Months</option>
-          <option value="1">January</option>
-          <option value="2">February</option>
-          <option value="3">March</option>
-          <option value="4">April</option>
-          <option value="5">May</option>
-          <option value="6">June</option>
-          <option value="7">July</option>
-          <option value="8">August</option>
-          <option value="9">September</option>
-          <option value="10">October</option>
-          <option value="11">November</option>
-          <option value="12">December</option>
-        </select>
-        <select id="filterYear" class="filter-select">
-          <option value="">All Years</option>
-          <!-- populated by JS -->
-        </select>
-        <button class="btn-apply" id="btnApply">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Apply
-        </button>
-        <button class="btn-reset" id="btnReset">Reset</button>
-      </div>
-
-      <!-- Search + filter -->
-      <div class="table-toolbar">
+      <!-- Search -->
+      <div class="mapping-toolbar">
         <div class="search-wrap">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search tenant..." />
+          <input type="text" id="searchInput" class="search-input" placeholder="Search expense..." />
         </div>
-        <select id="filterStatus" class="filter-select">
-          <option value="all">All</option>
-          <option value="paid">Cleared</option>
-          <option value="unpaid">Overdue</option>
-        </select>
+        <div class="mapping-stats">
+          <span class="stat-pill stat-pill--mapped" id="statMapped">0 mapped</span>
+          <span class="stat-pill stat-pill--unmapped" id="statUnmapped">0 unmapped</span>
+        </div>
       </div>
 
       <!-- Table -->
-      <div class="table-wrap">
-        <table class="dues-table" id="duesTable">
+      <div class="mapping-table-wrap">
+        <table class="mapping-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Tenant Name</th>
-              <th>Due Amount</th>
-              <th>Advance Amount</th>
-              <th>Due Date</th>
+              <th>Real Expense Name</th>
+              <th>Account No.</th>
+              <th>Budget Item</th>
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="duesBody">
-            <!-- TODO: populated from DB via JS/PHP -->
+          <tbody id="mappingBody">
+            <tr>
+              <td colspan="4" class="loading-row">Loading...</td>
+            </tr>
           </tbody>
         </table>
-        <p class="no-results" id="noResults" style="display:none;">No tenants match your search.</p>
       </div>
 
     </div>
   </div>
 
   <script src="JS/index.js"></script>
-  <script src="JS/tenant_dues.js"></script>
+  <script src="JS/expense_mapping.js"></script>
 </body>
 </html>

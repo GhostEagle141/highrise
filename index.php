@@ -68,12 +68,12 @@
         Supplier Dues
       </a>
 
-      <a href="budget-details.php" class="nav__item">
+      <a href="financial-details.php" class="nav__item">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <line x1="12" y1="1" x2="12" y2="23"/>
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
         </svg>
-        Budget Details
+        Financial Details
       </a>
 
       <a href="update-data.php" class="nav__item">
@@ -98,7 +98,7 @@
     </nav>
 
     <div class="sidebar__footer">
-      <a href="WS/WS_User_Functions.php?Function_ID=2" class="nav__item nav__item--logout">
+      <a href="login.php" class="nav__item nav__item--logout">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
@@ -126,26 +126,53 @@
 
     <!-- Page content -->
     <div class="content">
-      <h1 class="page-title">Welcome back</h1>
-      <p class="page-sub">Here are your highlights</p>
+      <div class="dashboard-header">
+        <div>
+          <h1 class="page-title">Welcome back</h1>
+          <p class="page-sub">Here are your highlights</p>
+        </div>
+        <div class="dashboard-filters">
+          <select id="dashProjectSelect" class="budget-project-select">
+            <option value="">Loading...</option>
+          </select>
+          <select id="dashMonthSelect" class="budget-project-select">
+            <option value="">All Months</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+          <select id="dashYearSelect" class="budget-project-select">
+            <option value="">All Years</option>
+          </select>
+        </div>
+      </div>
 
       <!-- Summary cards -->
       <div class="stat-grid">
         <div class="stat-card">
           <p class="stat-card__label">Total Budget</p>
-          <p class="stat-card__value">$120,000</p>
+          <p class="stat-card__value" id="statTotalBudget">—</p>
         </div>
         <div class="stat-card">
           <p class="stat-card__label">Spent</p>
-          <p class="stat-card__value">$74,500</p>
+          <p class="stat-card__value" id="statSpent">—</p>
         </div>
         <div class="stat-card">
           <p class="stat-card__label">Remaining</p>
-          <p class="stat-card__value">$45,500</p>
+          <p class="stat-card__value" id="statRemaining">—</p>
         </div>
         <div class="stat-card">
           <p class="stat-card__label">Total Tenants</p>
-          <p class="stat-card__value">48</p>
+          <p class="stat-card__value" id="statTenants">—</p>
         </div>
       </div>
 
@@ -196,6 +223,24 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Budget vs Expenses bar chart -->
+      <div class="chart-card" style="margin-top:16px; grid-column: 1 / -1;">
+        <div class="chart-card-header">
+          <div>
+            <h2 class="chart-card__title">Budget vs Expenses</h2>
+            <p class="chart-card__sub">Actual expenses compared to budget per cost code</p>
+          </div>
+        </div>
+        <div style="position:relative; width:100%; height:420px;">
+          <canvas id="chartBudgetVsExp" role="img" aria-label="Grouped bar chart comparing budget vs actual expenses per cost code">Budget vs expenses data.</canvas>
+        </div>
+        <div style="display:flex; gap:16px; font-size:12px; color:var(--text-muted); margin-top:14px; flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#1B3F72;"></span>Budget</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#4A7CC7;"></span>Expenses</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#E24B4A;"></span>Over budget</span>
+        </div>
       </div>
 
       <!-- Budget pie chart -->
