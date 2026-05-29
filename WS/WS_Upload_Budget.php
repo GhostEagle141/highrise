@@ -14,7 +14,6 @@ require_once '../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-
 header('Content-Type: application/json');
 
 // ---- Validate file ----
@@ -51,7 +50,9 @@ if (!$projectId) {
 
 // ---- Load spreadsheet ----
 try {
-    $spreadsheet = IOFactory::load($savePath);
+    $reader = IOFactory::createReaderForFile($savePath);
+    $reader->setReadDataOnly(true);
+    $spreadsheet = $reader->load($savePath);
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Failed to read file: ' . $e->getMessage()]);
     exit;
@@ -310,6 +311,139 @@ $stmtCost->close();
 $stmtCostCode->close();
 $stmtBudget->close();
 
+// ---- Step 11: Parse "Real Expenses" sheet ----
+$realExpensesInserted = 0;
+$realSheet = null;
+
+foreach ($spreadsheet->getSheetNames() as $sName) {
+    if (stripos($sName, 'Real Expenses') !== false) {
+        $realSheet = $spreadsheet->getSheetByName($sName);
+        break;
+    }
+}
+
+// ---- Step 11: Parse "GL" sheet and insert names into real_expanses_list ----
+$realExpensesInserted = 0;
+$glSheet = null;
+
+foreach ($spreadsheet->getSheetNames() as $sName) {
+    if (stripos($sName, 'GL') !== false) {
+        $glSheet = $spreadsheet->getSheetByName($sName);
+        break;
+    }
+}
+
+if ($glSheet !== null) {
+    $glHighestRow      = $glSheet->getHighestRow();
+    $glHighestCol      = $glSheet->getHighestColumn();
+    $glHighestColIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($glHighestCol);
+
+    // Find all needed columns
+    $nameCol    = null;
+    $accNoCol   = null;
+    $debitCol   = null;
+    $curCol     = null;
+    $dateCol    = null;
+    $glDataStart = null;
+
+    for ($i = 1; $i <= min($glHighestRow, 20); $i++) {
+        for ($col = 1; $col <= $glHighestColIndex; $col++) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+            $val       = strtolower(trim($glSheet->getCell($colLetter . $i)->getValue() ?? ''));
+            if ($val === 'name')                                              $nameCol  = $colLetter;
+            if ($val === 'acc.no.' || $val === 'acc.no' || $val === 'acc no') $accNoCol = $colLetter;
+            if ($val === 'debit')                                             $debitCol = $colLetter;
+            if ($val === 'cur')                                               $curCol   = $colLetter;
+            if ($val === 'date')                                              $dateCol  = $colLetter;
+        }
+        if ($nameCol !== null) {
+            $glDataStart = $i + 1;
+            break;
+        }
+    }
+
+    // ---- Cache currencies ----
+    $glCurrencyMap = [];
+    $glCurRes = $conn->query("SELECT ID, Name FROM currencies_list");
+    while ($r = $glCurRes->fetch_assoc()) {
+        $glCurrencyMap[strtolower(trim($r['Name']))] = $r['ID'];
+    }
+
+    if ($nameCol !== null && $glDataStart !== null) {
+
+        // Statement 1: real_expanses_list
+        $stmtReal = $conn->prepare("INSERT IGNORE INTO real_expanses_list (name, related_Account_no) VALUES (?, ?)");
+
+        // Statement 2: real_expanses
+        $stmtExp  = $conn->prepare("
+            INSERT IGNORE INTO real_expanses (Related_Account_No, Amount, Currency_ID, Trans_Date)
+            VALUES (?, ?, ?, ?)
+        ");
+
+        $realExpensesInserted2 = 0;
+
+        if ($stmtReal && $stmtExp) {
+            for ($row = $glDataStart; $row <= $glHighestRow; $row++) {
+                $nameVal  = trim($glSheet->getCell($nameCol . $row)->getValue() ?? '');
+                $accNoVal = $accNoCol ? trim($glSheet->getCell($accNoCol  . $row)->getValue() ?? '') : null;
+                $debitVal = $debitCol ? trim($glSheet->getCell($debitCol  . $row)->getCalculatedValue() ?? '') : '';
+                $curVal   = $curCol   ? strtolower(trim($glSheet->getCell($curCol . $row)->getValue() ?? '')) : '';
+                $dateRaw  = $dateCol  ? $glSheet->getCell($dateCol . $row)->getValue() : null;
+
+                if ($nameVal === '' || preg_replace('/\s+/u', '', $nameVal) === '') continue;
+
+                $accNoVal = $accNoVal !== '' ? $accNoVal : null;
+
+                // ---- Insert into real_expanses_list ----
+                $stmtReal->bind_param('ss', $nameVal, $accNoVal);
+                if ($stmtReal->execute() && $stmtReal->affected_rows > 0) {
+                    $realExpensesInserted++;
+                }
+
+                // ---- Insert into real_expanses ----
+                // Clean amount
+                $amount = is_numeric(str_replace(',', '', $debitVal))
+                    ? floatval(str_replace(',', '', $debitVal))
+                    : null;
+
+                // Skip rows with no debit amount
+                if ($amount === null || $amount == 0) continue;
+
+                // Resolve currency
+                $currencyId = isset($glCurrencyMap[$curVal]) ? $glCurrencyMap[$curVal] : null;
+                if ($currencyId === null) continue;
+
+                // Parse date — Excel stores dates as numeric serials
+                if ($dateRaw !== null && $dateRaw !== '') {
+                    if (is_numeric($dateRaw)) {
+                        $transDate = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($dateRaw)->format('Y-m-d');
+                    } else {
+                        $parsed    = date_create(trim($dateRaw));
+                        $transDate = $parsed ? date_format($parsed, 'Y-m-d') : null;
+                    }
+                } else {
+                    $transDate = null;
+                }
+
+                if ($transDate === null) continue;
+
+                $stmtExp->bind_param('sdis', $accNoVal, $amount, $currencyId, $transDate);
+                if ($stmtExp->execute() && $stmtExp->affected_rows > 0) {
+                    $realExpensesInserted2++;
+                }
+            }
+            $stmtReal->close();
+            $stmtExp->close();
+        } else {
+            $errors[] = 'GL prepare failed: ' . $conn->error;
+        }
+    } else {
+        $errors[] = 'Could not find "Name" column in GL sheet.';
+    }
+} else {
+    $errors[] = 'No sheet containing "GL" found — skipped.';
+}
+
 // ---- Commit or rollback ----
 if ($groupsInserted === 0 && $costsInserted === 0 && !empty($errors)) {
     $conn->rollback();
@@ -322,14 +456,16 @@ $conn->commit();
 $conn->close();
 
 echo json_encode([
-    'success'             => true,
-    'groups_inserted'     => $groupsInserted,
-    'costs_inserted'      => $costsInserted,
-    'cost_codes_inserted' => $costCodesInserted,
-    'budgets_inserted'    => $budgetsInserted,
-    'skipped'             => $skipped,
-    'errors'              => $errors,
-    'message'             => "$groupsInserted group(s), $costsInserted cost(s), $costCodesInserted cost code(s) and $budgetsInserted budget(s) saved successfully."
+    'success'               => true,
+    'groups_inserted'       => $groupsInserted,
+    'costs_inserted'        => $costsInserted,
+    'cost_codes_inserted'   => $costCodesInserted,
+    'budgets_inserted'      => $budgetsInserted,
+    'real_expenses_inserted'=> $realExpensesInserted,
+    'real_expanses_inserted'=> $realExpensesInserted2 ?? 0,
+    'skipped'               => $skipped,
+    'errors'                => $errors,
+    'message'               => "$groupsInserted group(s), $costsInserted cost(s), $costCodesInserted cost code(s), $budgetsInserted budget(s), $realExpensesInserted expense name(s) and " . ($realExpensesInserted2 ?? 0) . " expense transaction(s) saved successfully."
 ]);
 exit;
 ?>
