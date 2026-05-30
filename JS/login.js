@@ -30,26 +30,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Login
   btnLogin.addEventListener('click', function () {
-    const creds    = txtCreds.value.trim();
+    const name     = txtCreds.value.trim();
     const password = txtPassword.value.trim();
     let valid = true;
 
     clearError(txtCreds);
     clearError(txtPassword);
 
-    if (!creds)    { showError(txtCreds);    valid = false; }
+    if (!name)     { showError(txtCreds);    valid = false; }
     if (!password) { showError(txtPassword); valid = false; }
     if (!valid) return;
 
-    window.location.href = 'index.php';
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append('name',     name);
+    formData.append('password', password);
+
+    fetch('WS/WS_Login.php', { method: 'POST', body: formData })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        setLoading(false);
+        if (res.success) {
+          window.location.href = 'index.php';
+        } else {
+          showError(txtCreds);
+          showError(txtPassword);
+          showMessage(res.error || 'Invalid credentials.');
+        }
+      })
+      .catch(function () {
+        setLoading(false);
+        showMessage('Network error. Please try again.');
+      });
   });
 
-  // Clear error as user types
   [txtCreds, txtPassword].forEach(function (input) {
-    input.addEventListener('input', function () { clearError(input); });
+    input.addEventListener('input', function () { clearError(input); clearMessage(); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') btnLogin.click(); });
   });
 
   function showError(input)  { input.classList.add('error'); }
   function clearError(input) { input.classList.remove('error'); }
+
+  function showMessage(msg) {
+    let el = document.getElementById('loginError');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'loginError';
+      el.style.cssText = 'color:#B43232;font-size:0.82rem;margin-top:10px;text-align:center;';
+      btnLogin.parentNode.insertBefore(el, btnLogin.nextSibling);
+    }
+    el.textContent = msg;
+  }
+
+  function clearMessage() {
+    const el = document.getElementById('loginError');
+    if (el) el.textContent = '';
+  }
+
+  function setLoading(on) {
+    btnLogin.disabled = on;
+    const txt = btnLogin.querySelector('.btn-text');
+    if (txt) txt.textContent = on ? 'Signing in...' : 'Sign In';
+  }
 
 });

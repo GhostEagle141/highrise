@@ -612,6 +612,11 @@ function hideBarOverlay() {
           );
         }
 
+        // Update supplier charts
+        if (window.loadSupplierCharts) {
+          window.loadSupplierCharts(month, year);
+        }
+
         // Populate year dropdown from available dates
         populateYears(res.available);
       });
@@ -633,5 +638,137 @@ function hideBarOverlay() {
   function fmt(val) {
     return parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
+
+})();
+
+// =========================================
+// Supplier Charts
+// =========================================
+
+(function () {
+
+  let totalChart    = null;
+  let detailChart   = null;
+  const supplierSel = document.getElementById('supplierSelect');
+
+  const DONUT_OPTS = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '72%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function (ctx) {
+            return ' ' + ctx.label + ': ' + ctx.parsed.toLocaleString('en-US', { minimumFractionDigits: 2 });
+          }
+        }
+      }
+    },
+    animation: { duration: 600, easing: 'easeInOutQuart' }
+  };
+
+  // ---- Expose so stats widget can trigger reload ----
+  window.loadSupplierCharts = function (month, year) {
+    let url = 'WS/WS_Fetch_Supplier_Stats.php';
+    const p = [];
+    if (month) p.push('month=' + month);
+    if (year)  p.push('year='  + year);
+    const sid = supplierSel.value;
+    if (sid)   p.push('supplier_id=' + encodeURIComponent(sid));
+    if (p.length) url += '?' + p.join('&');
+
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res.success) return;
+
+        // Populate supplier dropdown once
+        if (supplierSel.options.length <= 1) {
+          supplierSel.innerHTML = '<option value="">All Suppliers</option>';
+          res.suppliers.forEach(function (s) {
+            const opt = document.createElement('option');
+            opt.value = s.Supplier_ID;
+            opt.textContent = s.Name;
+            supplierSel.appendChild(opt);
+          });
+        }
+
+        renderTotalChart(res.total_paid, res.total_due);
+        renderDetailChart(res.supplier.paid, res.supplier.due);
+      });
+  };
+
+  // ---- Supplier dropdown change ----
+  supplierSel.addEventListener('change', function () {
+    const month = document.getElementById('dashMonthSelect') ? document.getElementById('dashMonthSelect').value : '';
+    const year  = document.getElementById('dashYearSelect')  ? document.getElementById('dashYearSelect').value  : '';
+    window.loadSupplierCharts(month, year);
+  });
+
+  // ---- Render total donut ----
+  function renderTotalChart(paid, due) {
+    const total = paid + due;
+    const pct   = total > 0 ? Math.round((paid / total) * 100) : 0;
+
+    if (totalChart) {
+      totalChart.data.datasets[0].data = [paid, due];
+      totalChart.update();
+    } else {
+      const ctx = document.getElementById('chartSupplierTotal').getContext('2d');
+      totalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Paid', 'Due'],
+          datasets: [{ data: [paid, due], backgroundColor: ['#1B3F72', '#E8A87C'], borderWidth: 0, hoverOffset: 6 }]
+        },
+        options: DONUT_OPTS
+      });
+    }
+
+    const center = document.getElementById('supplierTotalCenter');
+    if (center) center.querySelector('.donut-center__value').textContent = pct + '%';
+    const elPaid = document.getElementById('supplierTotalPaid');
+    const elDue  = document.getElementById('supplierTotalDue');
+    if (elPaid) elPaid.textContent = '$' + fmt(paid);
+    if (elDue)  elDue.textContent  = '$' + fmt(due);
+  }
+
+  // ---- Render detail donut ----
+  function renderDetailChart(paid, due) {
+    const total = paid + due;
+    const pct   = total > 0 ? Math.round((paid / total) * 100) : 0;
+
+    if (detailChart) {
+      detailChart.data.datasets[0].data = [paid, due];
+      detailChart.update();
+    } else {
+      const ctx = document.getElementById('chartSupplierDetail').getContext('2d');
+      detailChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Paid', 'Due'],
+          datasets: [{ data: [paid, due], backgroundColor: ['#2B5BAD', '#E8A87C'], borderWidth: 0, hoverOffset: 6 }]
+        },
+        options: DONUT_OPTS
+      });
+    }
+
+    const center = document.getElementById('supplierDetailCenter');
+    if (center) center.querySelector('.donut-center__value').textContent = pct + '%';
+    const elPaid = document.getElementById('supplierDetailPaid');
+    const elDue  = document.getElementById('supplierDetailDue');
+    if (elPaid) elPaid.textContent = '$' + fmt(paid);
+    if (elDue)  elDue.textContent  = '$' + fmt(due);
+  }
+
+  function fmt(val) {
+    return parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Initial load
+  document.addEventListener('DOMContentLoaded', function () {
+    window.loadSupplierCharts('', '');
+  });
 
 })();

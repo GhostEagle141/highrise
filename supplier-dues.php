@@ -1,3 +1,4 @@
+<?php session_start(); $isAdmin = isset($_SESSION['user_type_id']) && $_SESSION['user_type_id'] === 1; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,6 +102,18 @@
         </svg>
         Profile
       </a>
+
+      <?php if ($isAdmin): ?>
+      <a href="register.php" class="nav__item">
+        <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        Register User
+      </a>
+      <?php endif; ?>
     </nav>
 
     <div class="sidebar__footer">
@@ -186,12 +199,10 @@
           <thead>
             <tr>
               <th>#</th>
-              <th class="sortable" data-col="supplier_id">ID <span class="sort-icon">↕</span></th>
               <th class="sortable" data-col="supplier_name">Supplier Name <span class="sort-icon">↕</span></th>
-              <th class="sortable" data-col="currency">Currency <span class="sort-icon">↕</span></th>
               <th class="sortable amount-header" data-col="paid_amount">Paid Amount <span class="sort-icon">↕</span></th>
               <th class="sortable amount-header" data-col="due_amount">Due Amount <span class="sort-icon">↕</span></th>
-              <th class="sortable amount-header" data-col="advance_amount">Advance <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="currency">Currency <span class="sort-icon">↕</span></th>
               <th class="sortable" data-col="due_date">Date <span class="sort-icon">↕</span></th>
             </tr>
           </thead>

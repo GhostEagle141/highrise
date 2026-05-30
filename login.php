@@ -42,13 +42,13 @@
 
       <!-- Form -->
       <div class="form-group">
-        <label class="form-label" for="txtCredentials">Email or Phone</label>
+        <label class="form-label" for="txtCredentials">Username</label>
         <div class="input-wrap">
           <svg class="input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-          <input type="text" id="txtCredentials" class="form-input" placeholder="you@example.com" autocomplete="username" />
+          <input type="text" id="txtCredentials" class="form-input" placeholder="Enter your username" autocomplete="username" />
         </div>
       </div>
 

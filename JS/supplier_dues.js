@@ -114,12 +114,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${i + 1}</td>
-        <td style="font-family:monospace;font-size:0.82rem;">${r.supplier_id || '—'}</td>
         <td>${r.supplier_name || '—'}</td>
-        <td><span class="currency-badge">${r.currency || '—'}</span></td>
         <td class="amount-cell">${fmt(r.paid_amount)}</td>
         <td class="amount-cell">${fmt(r.due_amount)}</td>
-        <td class="amount-cell">${fmt(r.advance_amount)}</td>
+        <td><span class="currency-badge">${r.currency || '—'}</span></td>
         <td>${r.due_date ? formatDate(r.due_date) : '—'}</td>
       `;
       tbody.appendChild(tr);
@@ -165,11 +163,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function setLoading(on) {
-    if (on) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#8FA0B4;">Loading...</td></tr>';
+    if (on) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#8FA0B4;">Loading...</td></tr>';
   }
 
   function showError(msg) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#B43232;padding:30px;">${msg}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#B43232;padding:30px;">${msg}</td></tr>`;
   }
 
 });

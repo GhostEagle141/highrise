@@ -1,3 +1,4 @@
+<?php session_start(); $isAdmin = isset($_SESSION['user_type_id']) && $_SESSION['user_type_id'] === 1; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +95,18 @@
         </svg>
         Profile
       </a>
+
+      <?php if ($isAdmin): ?>
+      <a href="register.php" class="nav__item">
+        <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        Register User
+      </a>
+      <?php endif; ?>
 
     </nav>
 
@@ -219,6 +232,64 @@
             <div class="legend-item">
               <span class="legend-dot" style="background:#E8A87C"></span>
               <span>Outstanding <strong>14</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Supplier charts -->
+      <div class="charts-grid" style="margin-top:16px;">
+
+        <!-- Total owed vs paid -->
+        <div class="chart-card">
+          <h2 class="chart-card__title">Supplier Balances</h2>
+          <p class="chart-card__sub">Total paid vs outstanding to suppliers</p>
+          <div class="chart-wrap">
+            <canvas id="chartSupplierTotal"></canvas>
+            <div class="donut-center" id="supplierTotalCenter">
+              <span class="donut-center__value">—</span>
+              <span class="donut-center__label">Paid</span>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#1B3F72"></span>
+              <span>Paid <strong id="supplierTotalPaid">—</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#E8A87C"></span>
+              <span>Due <strong id="supplierTotalDue">—</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-supplier breakdown -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <h2 class="chart-card__title">Supplier Detail</h2>
+              <p class="chart-card__sub">Paid vs due for selected supplier</p>
+            </div>
+            <select id="supplierSelect" class="budget-project-select">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chartSupplierDetail"></canvas>
+            <div class="donut-center" id="supplierDetailCenter">
+              <span class="donut-center__value">—</span>
+              <span class="donut-center__label">Paid</span>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#2B5BAD"></span>
+              <span>Paid <strong id="supplierDetailPaid">—</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background:#E8A87C"></span>
+              <span>Due <strong id="supplierDetailDue">—</strong></span>
             </div>
           </div>
         </div>
