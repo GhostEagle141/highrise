@@ -271,3 +271,12 @@
   background: var(--off-white);
   border-color: rgba(14,28,47,0.2);
 }
+
+/* ---- Tabular number font for summary pills ---- */
+.summary-pill__count {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}

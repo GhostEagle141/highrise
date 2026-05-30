@@ -43,6 +43,21 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   initUploadZone({
+    dropZone:   document.getElementById('dropZoneTenant'),
+    fileInput:  document.getElementById('fileInputTenant'),
+    btnBrowse:  document.getElementById('btnBrowseTenant'),
+    btnRemove:  document.getElementById('btnRemoveTenant'),
+    btnUpload:  document.getElementById('btnUploadTenant'),
+    stateIdle:  document.getElementById('stateIdleTenant'),
+    stateFile:  document.getElementById('stateFileTenant'),
+    fileName:   document.getElementById('fileNameTenant'),
+    fileSize:   document.getElementById('fileSizeTenant'),
+    uploadUrl:  'WS/WS_Upload_Tenant.php',
+    successMsg: 'Tenant data uploaded successfully',
+    _file:      null
+  });
+
+  initUploadZone({
     dropZone:   document.getElementById('dropZoneBudget'),
     fileInput:  document.getElementById('fileInputBudget'),
     btnBrowse:  document.getElementById('btnBrowseBudget'),

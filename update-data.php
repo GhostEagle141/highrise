@@ -205,6 +205,70 @@
         </div>
       </div>
 
+      <!-- Tenant Data -->
+      <div class="upload-section-label" style="margin-top: 32px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+        </svg>
+        Tenant Data
+      </div>
+      <div class="upload-card">
+        <div class="drop-zone" id="dropZoneTenant">
+          <input type="file" id="fileInputTenant" accept=".xlsx,.xls,.csv" hidden />
+          <div class="drop-zone__idle" id="stateIdleTenant">
+            <div class="excel-icon">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="8" fill="#1B6B35"/>
+                <rect x="6" y="8" width="18" height="24" rx="2" fill="white" opacity="0.15"/>
+                <rect x="6" y="8" width="18" height="24" rx="2" stroke="white" stroke-width="1.2" opacity="0.4"/>
+                <line x1="10" y1="14" x2="20" y2="14" stroke="white" stroke-width="1.2" opacity="0.6"/>
+                <line x1="10" y1="18" x2="20" y2="18" stroke="white" stroke-width="1.2" opacity="0.6"/>
+                <line x1="10" y1="22" x2="16" y2="22" stroke="white" stroke-width="1.2" opacity="0.6"/>
+                <rect x="18" y="20" width="16" height="14" rx="2" fill="#217346"/>
+                <text x="21" y="31" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white">XLS</text>
+              </svg>
+            </div>
+            <p class="drop-zone__heading">Drag & drop your file here</p>
+            <p class="drop-zone__sub">Supports .xlsx, .xls, .csv</p>
+            <button class="btn-browse" id="btnBrowseTenant">Browse file</button>
+          </div>
+          <div class="drop-zone__file" id="stateFileTenant" style="display:none;">
+            <div class="file-info">
+              <div class="file-info__icon">
+                <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+                  <rect width="40" height="40" rx="8" fill="#1B6B35"/>
+                  <rect x="6" y="8" width="18" height="24" rx="2" fill="white" opacity="0.15"/>
+                  <rect x="18" y="20" width="16" height="14" rx="2" fill="#217346"/>
+                  <text x="21" y="31" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="white">XLS</text>
+                </svg>
+              </div>
+              <div class="file-info__meta">
+                <p class="file-info__name" id="fileNameTenant">—</p>
+                <p class="file-info__size" id="fileSizeTenant">—</p>
+              </div>
+              <button class="btn-remove" id="btnRemoveTenant" aria-label="Remove file">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button class="btn-upload" id="btnUploadTenant" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 16 12 12 8 16"/>
+              <line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+            </svg>
+            Upload & Save
+          </button>
+          <p class="upload-hint">Tenant records will be updated immediately after upload</p>
+        </div>
+      </div>
+
       <!-- Budget -->
       <div class="upload-section-label" style="margin-top: 32px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">

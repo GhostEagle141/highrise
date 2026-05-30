@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Highrise – Financial Details</title>
+  <title>Highrise – Supplier Dues</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -53,15 +53,7 @@
         Tenant Dues
       </a>
 
-      <a href="supplier-dues.php" class="nav__item">
-        <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="2" y="7" width="20" height="14" rx="2"/>
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-        </svg>
-        Supplier Dues
-      </a>
-
-      <a href="supplier-dues.php" class="nav__item">
+      <a href="supplier-dues.php" class="nav__item active">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <rect x="2" y="7" width="20" height="14" rx="2"/>
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
@@ -71,7 +63,7 @@
         Supplier Dues
       </a>
 
-      <a href="financial-details.php" class="nav__item active">
+      <a href="financial-details.php" class="nav__item">
         <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <line x1="12" y1="1" x2="12" y2="23"/>
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
@@ -129,19 +121,22 @@
       <button class="hamburger" id="btnHamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
-      <span class="topbar__title">Financial Details</span>
+      <span class="topbar__title">Supplier Dues</span>
       <div class="topbar__spacer"></div>
     </header>
 
     <div class="content">
-      <h1 class="page-title">Financial Details</h1>
-      <p class="page-sub">All recorded expenses with budget group filtering</p>
+      <h1 class="page-title">Supplier Dues</h1>
+      <p class="page-sub">Outstanding and paid balances per supplier</p>
 
-      <!-- Filters -->
+      <!-- Date filter -->
       <div class="date-toolbar" style="margin-top:20px;">
-        <select id="filterGroup" class="filter-select">
-          <option value="">All Cost Groups</option>
-        </select>
+        <div class="search-wrap" style="flex:1;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search supplier..." />
+        </div>
         <select id="filterMonth" class="filter-select">
           <option value="">All Months</option>
           <option value="1">January</option>
@@ -173,39 +168,44 @@
       <div class="dues-summary" style="margin-top:16px;">
         <div class="summary-pill summary-pill--total">
           <span class="summary-pill__count" id="summaryCount">—</span>
-          <span class="summary-pill__label">Records</span>
+          <span class="summary-pill__label">Suppliers</span>
         </div>
         <div class="summary-pill summary-pill--paid">
-          <span class="summary-pill__count" id="summaryTotal" style="font-size:1rem;">—</span>
-          <span class="summary-pill__label">Total (USD)</span>
+          <span class="summary-pill__count" id="summaryPaid" style="font-size:1rem;">—</span>
+          <span class="summary-pill__label">Total Paid</span>
+        </div>
+        <div class="summary-pill summary-pill--unpaid">
+          <span class="summary-pill__count" id="summaryDue" style="font-size:1rem;">—</span>
+          <span class="summary-pill__label">Total Due</span>
         </div>
       </div>
 
       <!-- Table -->
       <div class="table-wrap">
-        <table class="dues-table" id="financialTable">
+        <table class="dues-table" id="supplierTable">
           <thead>
             <tr>
               <th>#</th>
-              <th class="sortable" data-col="account_no">Account No. <span class="sort-icon">↕</span></th>
-              <th class="sortable" data-col="expense_name">Expense Name <span class="sort-icon">↕</span></th>
-              <th class="sortable amount-header" data-col="amount">Amount <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="supplier_id">ID <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="supplier_name">Supplier Name <span class="sort-icon">↕</span></th>
               <th class="sortable" data-col="currency">Currency <span class="sort-icon">↕</span></th>
-              <th class="sortable amount-header" data-col="amount_usd">Amount (USD) <span class="sort-icon">↕</span></th>
-              <th class="sortable" data-col="trans_date">Date <span class="sort-icon">↕</span></th>
+              <th class="sortable amount-header" data-col="paid_amount">Paid Amount <span class="sort-icon">↕</span></th>
+              <th class="sortable amount-header" data-col="due_amount">Due Amount <span class="sort-icon">↕</span></th>
+              <th class="sortable amount-header" data-col="advance_amount">Advance <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="due_date">Date <span class="sort-icon">↕</span></th>
             </tr>
           </thead>
-          <tbody id="financialBody">
-            <tr><td colspan="7" style="text-align:center;padding:30px;color:#8FA0B4;">Loading...</td></tr>
+          <tbody id="supplierBody">
+            <tr><td colspan="8" style="text-align:center;padding:30px;color:#8FA0B4;">Loading...</td></tr>
           </tbody>
         </table>
-        <p class="no-results" id="noResults" style="display:none;">No records match your filters.</p>
+        <p class="no-results" id="noResults" style="display:none;">No suppliers match your search.</p>
       </div>
 
     </div>
   </div>
 
   <script src="JS/index.js"></script>
-  <script src="JS/financial_details.js"></script>
+  <script src="JS/supplier_dues.js"></script>
 </body>
 </html>
