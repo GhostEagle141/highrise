@@ -1,0 +1,383 @@
+/* =========================================
+   Highrise – Dashboard Styles
+   ========================================= */
+
+/* ---- Stat cards ---- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid rgba(14,28,47,0.06);
+  box-shadow: 0 1px 6px rgba(14,28,47,0.05);
+}
+
+.stat-card__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-card__value {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* ---- Charts grid ---- */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 22px 20px;
+  border: 1px solid rgba(14,28,47,0.06);
+  box-shadow: 0 1px 6px rgba(14,28,47,0.05);
+}
+
+.chart-card__title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.chart-card__sub {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* Donut wrapper */
+.chart-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+}
+
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.donut-center__value {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.donut-center__label {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Legend */
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.legend-item strong {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ---- Desktop ---- */
+@media (min-width: 600px) {
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---- Budget chart card ---- */
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.budget-project-select {
+  padding: 8px 32px 8px 12px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  background: #F5F7FA;
+  border: 1px solid rgba(13,31,60,0.18);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238FA0B4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  flex-shrink: 0;
+}
+
+.budget-project-select:focus {
+  border-color: var(--navy-mid);
+  box-shadow: 0 0 0 3px rgba(13,31,60,0.08);
+}
+
+.budget-chart-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.budget-pie-wrap {
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.budget-pie-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.budget-legend {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.budget-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.budget-legend-item strong {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-left: auto;
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.budget-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.budget-legend-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.budget-legend-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 431px) {
+  .budget-legend-item {
+    flex-direction: row;
+    align-items: center;
+  }
+  .budget-legend-item strong {
+    margin-left: auto;
+  }
+}
+
+/* ---- Dashboard header with filters ---- */
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.dashboard-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ---- MOBILE OVERRIDES — must be last ---- */
+@media (max-width: 430px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard-filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .dashboard-filters select:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .stat-card {
+    padding: 10px 12px;
+  }
+
+  .stat-card__label {
+    font-size: 0.6rem;
+    margin-bottom: 4px;
+  }
+
+  .stat-card__value,
+  #statTotalBudget,
+  #statSpent,
+  #statRemaining,
+  #statTenants {
+    font-size: 0.68rem !important;
+    letter-spacing: -0.02em;
+    word-break: break-all;
+  }
+
+  .budget-chart-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .budget-pie-wrap {
+    width: 190px;
+    height: 190px;
+  }
+
+  .budget-legend {
+    width: 100%;
+    min-width: unset;
+    gap: 6px;
+  }
+
+  .budget-legend-item {
+    flex-direction: column;
+    align-items: flex-start;
+    background: #F5F7FA;
+    border-radius: 8px;
+    padding: 8px 12px;
+    gap: 3px;
+  }
+
+  .budget-legend-item .budget-legend-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .budget-legend-item .budget-legend-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .budget-legend-item strong {
+    margin-left: 18px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    padding-left: 0;
+  }
+
+  .chart-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .budget-project-select {
+    width: 100%;
+    max-width: 100%;
+  }
+}

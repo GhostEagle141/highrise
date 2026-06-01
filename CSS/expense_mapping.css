@@ -1,0 +1,179 @@
+/* =========================================
+   Highrise – Expense Mapping Page
+   ========================================= */
+
+/* ---- Top bar save button ---- */
+.btn-save-all {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: var(--blue);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s, opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.btn-save-all:hover:not(:disabled) { background: var(--blue-mid); }
+.btn-save-all:active:not(:disabled) { transform: scale(0.98); }
+.btn-save-all:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---- Toolbar ---- */
+.mapping-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.mapping-stats {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stat-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.stat-pill--mapped   { background: rgba(27,107,53,0.1);  color: #1B6B35; }
+.stat-pill--unmapped { background: rgba(180,50,50,0.08); color: #B43232; }
+
+/* ---- Table ---- */
+.mapping-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(14,28,47,0.06);
+  box-shadow: 0 1px 6px rgba(14,28,47,0.05);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 560px;
+}
+
+.mapping-table thead tr {
+  border-bottom: 1px solid rgba(14,28,47,0.08);
+}
+
+.mapping-table th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.mapping-table td {
+  padding: 12px 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(14,28,47,0.05);
+  vertical-align: middle;
+}
+
+.mapping-table tbody tr:last-child td { border-bottom: none; }
+.mapping-table tbody tr:hover { background: #F8FAFD; }
+
+.mapping-table tbody tr.row-mapped   { background: rgba(27,107,53,0.03); }
+.mapping-table tbody tr.row-unmapped { background: transparent; }
+
+/* Expense name cell */
+.expense-name {
+  font-weight: 400;
+  color: var(--text-primary);
+  max-width: 260px;
+  word-break: break-word;
+}
+
+.account-no {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+/* Budget dropdown */
+.budget-select {
+  width: 100%;
+  min-width: 200px;
+  padding: 8px 32px 8px 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  background: #F5F7FA;
+  border: 1px solid rgba(27,63,114,0.15);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238FA0B4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-color: #F5F7FA;
+}
+
+.budget-select:focus {
+  border-color: var(--blue-mid);
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(27,63,114,0.08);
+}
+
+.budget-select.is-mapped {
+  border-color: rgba(27,107,53,0.3);
+  background-color: rgba(27,107,53,0.04);
+}
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-badge--mapped   { background: rgba(27,107,53,0.1);  color: #1B6B35; }
+.status-badge--unmapped { background: rgba(14,28,47,0.06);   color: var(--text-muted); }
+
+.status-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-badge--mapped   .status-badge__dot { background: #1B6B35; }
+.status-badge--unmapped .status-badge__dot { background: var(--text-muted); }
+
+/* Loading / empty */
+.loading-row {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 300;
+}
